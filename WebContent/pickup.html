@@ -60,22 +60,6 @@
 			<div class="col-lg-12">
 				<h1 class="page-header">Welcome to Faiz-ul-Mawaid al-Burhaniya,
 					San Jose</h1>
-				<div class="btn-group" data-toggle="buttons">
-					<label class="btn btn-primary active"> <input type="radio"
-						name="options" id="option1" autocomplete="off" checked>
-						All
-					</label> <label class="btn btn-primary"> <input type="radio"
-						name="options" id="option2" autocomplete="off"> Sunnyvale
-					</label>
-				</div>
-				<div class="well">
-					<h3>Volunteers</h3>
-					<p>Chef: ABCbhai XYZwala</p>
-					<p>
-						<strong>Sunnyvale Address: Huzefa Siyaji </strong> 1000 San
-						Antonio Rd, Palo Alto CA
-					</p>
-				</div>
 			</div>
 		</div>
 		<!-- Marketing Icons Section -->
@@ -85,18 +69,40 @@
 				<div class="panel-group" id="accordion" role="tablist"
 					aria-multiselectable="true">
 					<div class="panel panel-default">
-						<div class="panel-heading" role="tab" id="headingOne">
+						<div class="panel-heading clickable" role="tab" id="headingOne">
 							<h3 class="panel-title">
 								<a data-toggle="collapse" data-parent="#accordion"
 									href="#collapseOne" aria-expanded="true"
 									aria-controls="collapseOne"> <strong>Monday 12/01
 										- Biryani</strong>
 								</a>
+								<input type="checkbox" class="checkbox pull-right"
+												id="blankCheckbox" value="option1" aria-label="Picked">
 							</h3>
 						</div>
 						<div id="collapseOne" class="panel-collapse collapse in"
 							role="tabpanel" aria-labelledby="headingOne">
+							
 							<div class="panel-body">
+							<div role="tabpanel">
+
+							  <!-- Nav tabs -->
+							  <ul class="nav nav-tabs" role="tablist">
+							    <li role="presentation" class="active"><a href="#all" aria-controls="home" role="tab" data-toggle="tab">All</a></li>
+							    <li role="presentation"><a href="#sv" aria-controls="profile" role="tab" data-toggle="tab">Sunnyvale</a></li>
+							    <li role="presentation"><a href="#mp" aria-controls="messages" role="tab" data-toggle="tab">Milpitas</a></li>
+							    <li role="presentation"><a href="#cup" aria-controls="settings" role="tab" data-toggle="tab">Cupertino</a></li>
+							  </ul>
+							
+							  <!-- Tab panes -->
+							  <div class="tab-content">
+							    <div role="tabpanel" class="tab-pane active" id="all">...</div>
+							    <div role="tabpanel" class="tab-pane" id="sv">...</div>
+							    <div role="tabpanel" class="tab-pane" id="mp">...</div>
+							    <div role="tabpanel" class="tab-pane" id="cup">...</div>
+							  </div>
+							
+							</div>
 								<table class="table table-striped">
 									<thead>
 										<tr>
@@ -104,33 +110,53 @@
 											<th># Small Thali</th>
 											<th># Large Thali</th>
 											<th>Picked up</th>
-											<th>Signature</th>
 										</tr>
 									</thead>
 									<tbody>
 										<tr>
-											<th>Husain</th>
-											<th>2</th>
-											<th>0</th>
-											<th><input type="checkbox" class="checkbox"
-												id="blankCheckbox" value="option1" aria-label="..."></th>
-											<th></th>
+											<td colspan=4>Sunnyvale</td>
 										</tr>
 										<tr>
-											<th>Husain</th>
-											<th>2</th>
-											<th>0</th>
-											<th><input type="checkbox" class="checkbox"
-												id="blankCheckbox" value="option1" aria-label="..."></th>
-											<th></th>
+											<td>Husain</td>
+											<td>2</td>
+											<td>0</td>
+											<td><input type="checkbox" class="checkbox"
+												id="blankCheckbox" value="option1" aria-label="..."></td>
 										</tr>
 										<tr>
-											<th>Husain</th>
-											<th>2</th>
-											<th>0</th>
-											<th><input type="checkbox" class="checkbox"
-												id="blankCheckbox" value="option1" aria-label="..."></th>
-											<th></th>
+											<td>Husain</td>
+											<td>2</td>
+											<td>0</td>
+											<td><input type="checkbox" class="checkbox"
+												id="blankCheckbox" value="option1" aria-label="..."></td>
+										</tr>
+										<tr>
+											<td>Husain</td>
+											<td>2</td>
+											<td>0</td>
+											<td><input type="checkbox" class="checkbox"
+												id="blankCheckbox" value="option1" aria-label="..."></td>
+										</tr>
+										<tr>
+											<td>Husain</td>
+											<td>2</td>
+											<td>0</td>
+											<td><input type="checkbox" class="checkbox"
+												id="blankCheckbox" value="option1" aria-label="..."></td>
+										</tr>
+										<tr>
+											<td>Husain</td>
+											<td>2</td>
+											<td>0</td>
+											<td><input type="checkbox" class="checkbox"
+												id="blankCheckbox" value="option1" aria-label="..."></td>
+										</tr>
+										<tr>
+											<td>Husain</td>
+											<td>2</td>
+											<td>0</td>
+											<td><input type="checkbox" class="checkbox"
+												id="blankCheckbox" value="option1" aria-label="..."></td>
 										</tr>
 									</tbody>
 								</table>
@@ -143,7 +169,8 @@
 								<a class="collapsed" data-toggle="collapse"
 									data-parent="#accordion" href="#collapseTwo"
 									aria-expanded="false" aria-controls="collapseTwo">
-									Collapsible Group Item #2 </a>
+									<strong>Tuesday 12/02
+										- Sabzi</strong> </a>
 							</h4>
 						</div>
 						<div id="collapseTwo" class="panel-collapse collapse"
@@ -167,7 +194,8 @@
 								<a class="collapsed" data-toggle="collapse"
 									data-parent="#accordion" href="#collapseThree"
 									aria-expanded="false" aria-controls="collapseThree">
-									Collapsible Group Item #3 </a>
+									<strong>Thursday 12/04
+										- Daal</strong> </a>
 							</h4>
 						</div>
 						<div id="collapseThree" class="panel-collapse collapse"
