@@ -1,0 +1,308 @@
+
+<!-- saved from url=(0041)http://anjuman-e-jamali.com/RSVP/rsvp.php -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"><title>RSVP</title>
+	
+		<title>Faiz-ul-Mawaid al-Burhaniya - San Jose</title>
+ 		<meta name="description" content="website description">
+  		<meta name="keywords" content="website keywords, website keywords">
+  		
+  		<link rel="stylesheet" href="http://anjuman-e-jamali.com/RSVP/style/style.css">
+		<script src="./RSVP_files/jquery.min.js"></script><style type="text/css"></style>
+		
+		<script type="text/javascript">
+		var name,its_id;
+
+		//returns the current month
+		function get_month(){
+				var d = new Date();
+				var n = d.getMonth() + 1;
+				if (n<10)
+					return "0" + n;
+				else
+					return n;
+        }
+
+		//return the current year
+        function get_year(){
+			var d = new Date();
+			return d.getFullYear();
+        }
+
+        //check if admin
+        function is_admin(){
+        	//is user an admin
+			$.get("is_admin.php",{
+					id:its_id
+				 },function(data,status){
+					if(data){
+						$("#admin").show();
+					}
+					
+			});
+        }
+
+        //changes to be performed for logged out user
+        function update_for_logged_out_user(){
+        	$("#rsvp").hide();
+			$("#table_hide").hide();
+        	$("#admin").hide();
+			$(".sidebar").hide();
+			$("#login").show();
+			
+        }
+
+        //changes to perform for logged in user
+        function update_for_logged_in_user(){
+			$("#login").hide();
+			$("#rsvp").show();
+			$(".sidebar").show();
+			$("#name").html(name);
+			//is user an admin
+			is_admin();
+        }
+
+        //logout
+        function logout(){
+			$.get("logout.php",function(data,status){ update_for_logged_out_user();});
+        	
+        }
+        	
+			
+			var rsvp_dates = new Array();
+
+		$(document).ready(function(){
+			update_for_logged_out_user();
+
+			//setting the current month and year
+			$("#month").val(get_month());
+			$("#year").val(get_year());
+			
+			//check whether the person is already authenticated
+			$.get("is_authenticated.php",function(data,status){
+				
+				if (data.match(/Success/g)){
+					its_id = null;
+					name = null;
+					update_for_logged_in_user();
+				}
+			});
+			
+			//authenticate on clicking the login button
+			$("#login_button").click(function(){
+					
+					$.get("auth.php",{
+						its_id: $("#its_id").val(),
+						pwd	  : $("#pwd").val()
+					},function(data,status){
+						if (data.match(/Error/g)){
+							alert(data);
+							return;
+						}
+
+						if (data.match(/Failed/g)){
+							alert("Incorrect credentials");
+							return;
+						}
+
+						its_id = $("#its_id").val();
+						name = data;
+						update_for_logged_in_user();
+				});
+		
+			});
+
+			//get the RSVP details for the selected month			
+			 $("#submit").click(function(){
+				 	 
+				 	$.get("get_rsvp_data.php",{
+							month:$("#month").val(),
+							year:$("#year").val(),
+							id:its_id
+						},function(data,status){
+							
+							if (data.match(/Error/g)){
+								alert(data);
+								return;
+							}
+							$("#table_hide").show();
+							var records = data.split("|")[0];
+							var dates = data.split("|")[1];
+							rsvp_dates = dates.split("#");
+							$("#rsvp_table").html(records);
+							
+					});
+				});
+
+			 $("#save_rsvp").click(function(){
+				 
+					var str = {};
+					for(var i=0;i<rsvp_dates.length;i++){
+						var date = rsvp_dates[i];
+						var small_id = "#" + date + "_small";
+						var large_id = "#" + date + "_large";
+						var pickup_id = "#" + date + "_pickup";
+
+						// check whether they forgot to select a location and just selected thalis
+						if((($(small_id).val() != 0) || ($(large_id).val() != 0)) && ($(pickup_id).val() == "Not-Selected")){
+							alert("Please select a pick up location for days you are trying to RSVP for a thali");
+							$(pickup_id).focus();
+							return;
+						}
+
+							
+						str[rsvp_dates[i]] = {	small:$(small_id).val(),
+												large:$(large_id).val(),
+												pickup:$(pickup_id).val()
+											 };
+					}
+					
+					$.get("save_rsvp_data.php",{
+							data:JSON.stringify(str),
+							id:its_id
+						},function(dat,status){
+							if (dat.match(/Error/g)){
+								alert(dat);
+								return;
+							}
+							alert(dat);
+			
+					});
+				});
+			});
+
+			
+		</script>
+	</head>
+<body>
+<div id="main">
+    <div id="header">
+      <div id="logo">
+        <div id="logo_text">
+        <div id="photo"></div>
+          <!-- class="logo_colour", allows you to change the colour of the text -->
+          <h1><a href="http://anjuman-e-jamali.com/RSVP/fmbsanjose.html">Faiz-ul-Mawaid al-Burhaniya<span class="logo_colour">  San Jose</span></a></h1>
+          
+        </div>
+      </div>
+      <div id="menubar">
+        <ul id="menu">
+          <!-- put class="selected" in the li tag for the selected page - to highlight which page you're on -->
+          <li><a href="http://anjuman-e-jamali.com/RSVP/fmbsanjose.html">Home</a></li>
+          <li class="selected"><a href="./RSVP_files/RSVP.html">Update RSVP</a></li>
+          <li><a href="http://anjuman-e-jamali.com/RSVP/contact.html">Contact Us</a></li>
+        </ul>
+      	
+      </div>
+    </div>
+    <div id="content_header"></div>
+    <div id="site_content">
+    <div id="sidebar_container">
+      <div class="sidebar" style="display: block;">
+       <div class="sidebar_top"></div>
+    	<div class="sidebar_item">
+    		<h3>Welcome <span id="name">Husain Dalal</span></h3>
+    		<ul>
+    			<li><a href="http://anjuman-e-jamali.com/RSVP/view_reports.php" target="_blank">View Sign-up Sheet</a></li>
+    			<li><a href="http://anjuman-e-jamali.com/RSVP/confirmation.php" target="_blank">Confirm Pick Up</a></li>
+    			<li id="logout"><a href="javascript:logout()">Logout</a></li>
+    		</ul>
+    	</div>
+    	<div class="sidebar_base"></div>
+      </div>
+    </div>
+    <div id="content">
+ <div id="admin" style="display: none;">
+          <!-- put class="selected" in the li tag for the selected page - to highlight which page you're on -->
+          <span><a href="http://anjuman-e-jamali.com/RSVP/update_menu.php" target="_blank">Update Menu/Miqat</a>&nbsp;</span>
+          <span><a href="http://anjuman-e-jamali.com/RSVP/update_userlist.php" target="_blank">Add/Update Users</a>&nbsp;</span>
+          <span><a href="http://anjuman-e-jamali.com/RSVP/update_pick_up.php" target="_blank">Update Pick Up</a>&nbsp;</span>
+          <span><a href="http://anjuman-e-jamali.com/RSVP/update_user_RSVP.php" target="_blank">Update User RSVP</a>&nbsp;</span>
+</div> 
+<div id="login" style="display: none;">
+
+<p>If you do not have login credentials and wish to register, please contact the Mawaid Committee at <b><a>faiz.mawaid.sj@gmail.com</a></b> . For other technical issues, please contact the site admin.</p>
+<div class="form_settings">
+<p>
+	<span>ITS ID</span>
+	<input type="text" id="its_id" style="background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3QsPDhss3LcOZQAAAU5JREFUOMvdkzFLA0EQhd/bO7iIYmklaCUopLAQA6KNaawt9BeIgnUwLHPJRchfEBR7CyGWgiDY2SlIQBT/gDaCoGDudiy8SLwkBiwz1c7y+GZ25i0wnFEqlSZFZKGdi8iiiOR7aU32QkR2c7ncPcljAARAkgckb8IwrGf1fg/oJ8lRAHkR2VDVmOQ8AKjqY1bMHgCGYXhFchnAg6omJGcBXEZRtNoXYK2dMsaMt1qtD9/3p40x5yS9tHICYF1Vn0mOxXH8Uq/Xb389wff9PQDbQRB0t/QNOiPZ1h4B2MoO0fxnYz8dOOcOVbWhqq8kJzzPa3RAXZIkawCenHMjJN/+GiIqlcoFgKKq3pEMAMwAuCa5VK1W3SAfbAIopum+cy5KzwXn3M5AI6XVYlVt1mq1U8/zTlS1CeC9j2+6o1wuz1lrVzpWXLDWTg3pz/0CQnd2Jos49xUAAAAASUVORK5CYII=); background-attachment: scroll; background-position: 100% 50%; background-repeat: no-repeat;">
+</p>
+<p>
+	<span>Password</span>
+	<input type="password" id="pwd" autocomplete="off" style="cursor: auto; background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3QsPDiEFu6xIcAAAAXhJREFUOMvNk8FLVFEUxn/ffRdmIAla1CbBFDGCpoiQWYlBLty7UHAvEq2HYLhveDMws2/TIly6E9SdIEj+AVYgRaTgXhe2C968x2nhTOjow8pNZ/ede/ide893Lvx3UavVhkMIk30dQqiGECpF9e68CCG8LpfL3yStAAIk6Z2kT3Ect68C+AGdSroFVEII82aWSXoGYGYHVwE0qOM43pU0BXw3s1zSI2AnSZKXhYB6vT7inLvd7XZ/eu8fOOe2JEW9zjkwZ2bHkoayLDtpt9ufLzzBe/8GWC6VSpc7nIE2pLPLeu/fA0uDQ3T/6pp6039uZnfN7Ieke1EUrQOu3/VawPloNBrbwIyZ7TvnLvg/+mKOJ3xk88NR4R4sADM92fp9MDRMdXaRxenHVMbuFy8SMAFkZval2Wyu9ZN3Hk4zWx0nAtKsWwxotVrNNE2f5nn+CrB+/nRvlSR5y2EK0TWbSKfT+fo3Lribfr4bA/yfl56y2kkuZX8BjXVyqMs8oFcAAAAASUVORK5CYII=); background-attachment: scroll; background-position: 100% 50%; background-repeat: no-repeat;">
+</p>
+<p>
+
+	<input type="button" class="submit" value="Login" id="login_button">
+</p>
+</div>
+</div>
+<div id="rsvp" style="display: block;">
+<h1>Update Your RSVP</h1>
+
+<div class="form_settings">
+<p>
+	<span>Select Year</span>
+	<select id="year">
+		<option selected="selected" value="2014">2014</option>
+		<option value="2015">2015</option>
+		<option value="2016">2016</option>
+	</select>
+</p>
+
+<p>
+	<span>Select Month</span>
+	<select id="month">
+		<option value="01">JAN</option>
+		<option value="02">FEB</option>
+		<option value="03">MAR</option>
+		<option value="04">APR</option>
+		<option value="05">MAY</option>
+		<option value="06">JUN</option>
+		<option value="07">JUL</option>
+		<option selected="selected" value="08">AUG</option>
+		<option value="09">SEP</option>
+		<option value="10">OCT</option>
+		<option value="11">NOV</option>
+		<option value="12">DEC</option>
+	</select>
+</p>
+
+<p>
+<input class="submit" type="button" id="submit" value="Update RSVP"> </p>
+<p></p>
+</div>
+
+
+<p></p>
+</div>
+<div id="main_content">
+<div id="table_hide" style="display: block;">
+<table align="center">
+	<tbody><tr>
+		<th>Date</th>
+		<th>Day</th>
+		<th>Menu</th>
+		<th># Small Thalis</th>
+		<th># Large Thalis</th>
+		<th>Pick up Location</th>
+	</tr>
+	</tbody><tbody id="rsvp_table"><tr><td>12-01</td><td>Mon</td><td class="menu-width">Waghareli Khichdi, Soup</td><td>1</td><td>0</td><td>Sunnyvale</td></tr><tr><td>12-02</td><td>Tue</td><td class="menu-width">Haleem</td><td>1</td><td>0</td><td>Sunnyvale</td></tr><tr><td>12-03</td><td>Wed</td><td class="menu-width">Chicken Biryani, Raita</td><td>1</td><td>0</td><td>Sunnyvale</td></tr><tr><td>12-04</td><td>Thu</td><td class="menu-width">Mixed Veg</td><td>1</td><td>0</td><td>Sunnyvale</td></tr><tr><td>12-05</td><td>Fri</td><td colspan="4"><div align="center">NO FMB for this day yet.</div></td></tr><tr><td>12-06</td><td>Sat</td><td class="menu-width">DCP</td><td>1</td><td>0</td><td>Sunnyvale</td></tr><tr><td>12-07</td><td>Sun</td><td colspan="4"><div align="center">NO FMB for this day yet.</div></td></tr><tr><td colspan="6" bgcolor="#8f5902" height="1px"></td></tr><tr><td>12-08</td><td>Mon</td><td class="menu-width">Masoor Chawal  </td><td>1</td><td>0</td><td>Sunnyvale</td></tr><tr><td>12-09</td><td>Tue</td><td class="menu-width">Chicken Kheema tarkari</td><td>1</td><td>0</td><td>Sunnyvale</td></tr><tr><td>12-10</td><td>Wed</td><td class="menu-width">Bhaji</td><td>1</td><td>0</td><td>Sunnyvale</td></tr><tr><td>12-11</td><td>Thu</td><td colspan="4"><div align="center"><font color="red">Chelum - Imam Hussain A.S</font></div></td></tr><tr><td>12-12</td><td>Fri</td><td colspan="4"><div align="center">NO FMB for this day yet.</div></td></tr><tr><td>12-13</td><td>Sat</td><td class="menu-width">Kari (gosht) and chawal</td><td>0</td><td>1</td><td>Sunnyvale</td></tr><tr><td>12-14</td><td>Sun</td><td colspan="4"><div align="center">NO FMB for this day yet.</div></td></tr><tr><td colspan="6" bgcolor="#8f5902" height="1px"></td></tr><tr><td>12-15</td><td>Mon</td><td class="menu-width">TBD</td><td><select id="2014-12-15_small"><option selected="selected" value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></td><td><select id="2014-12-15_large"><option selected="selected" value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></td><td><select id="2014-12-15_pickup"><option selected="selected" value="Not-Selected">Not-Selected</option><option value="Sunnyvale">Sunnyvale</option><option value="Milpitas">Milpitas</option><option value="Los Gatos">Los Gatos</option><option value="Masjid Mawaid">Masjid Mawaid</option><option value="Cupertino">Cupertino</option></select></td></tr><tr><td>12-16</td><td>Tue</td><td class="menu-width">TBD</td><td><select id="2014-12-16_small"><option selected="selected" value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></td><td><select id="2014-12-16_large"><option selected="selected" value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></td><td><select id="2014-12-16_pickup"><option selected="selected" value="Not-Selected">Not-Selected</option><option value="Sunnyvale">Sunnyvale</option><option value="Milpitas">Milpitas</option><option value="Los Gatos">Los Gatos</option><option value="Masjid Mawaid">Masjid Mawaid</option><option value="Cupertino">Cupertino</option></select></td></tr><tr><td>12-17</td><td>Wed</td><td class="menu-width">TBD</td><td><select id="2014-12-17_small"><option selected="selected" value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></td><td><select id="2014-12-17_large"><option selected="selected" value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></td><td><select id="2014-12-17_pickup"><option selected="selected" value="Not-Selected">Not-Selected</option><option value="Sunnyvale">Sunnyvale</option><option value="Milpitas">Milpitas</option><option value="Los Gatos">Los Gatos</option><option value="Masjid Mawaid">Masjid Mawaid</option><option value="Cupertino">Cupertino</option></select></td></tr><tr><td>12-18</td><td>Thu</td><td class="menu-width">TBD</td><td><select id="2014-12-18_small"><option selected="selected" value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></td><td><select id="2014-12-18_large"><option selected="selected" value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></td><td><select id="2014-12-18_pickup"><option selected="selected" value="Not-Selected">Not-Selected</option><option value="Sunnyvale">Sunnyvale</option><option value="Milpitas">Milpitas</option><option value="Los Gatos">Los Gatos</option><option value="Masjid Mawaid">Masjid Mawaid</option><option value="Cupertino">Cupertino</option></select></td></tr><tr><td>12-19</td><td>Fri</td><td colspan="4"><div align="center"><font color="red">Shahadat - Imam Hassan A.S.</font></div></td></tr><tr><td>12-20</td><td>Sat</td><td class="menu-width">TBD</td><td><select id="2014-12-20_small"><option selected="selected" value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></td><td><select id="2014-12-20_large"><option selected="selected" value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></td><td><select id="2014-12-20_pickup"><option selected="selected" value="Not-Selected">Not-Selected</option><option value="Sunnyvale">Sunnyvale</option><option value="Milpitas">Milpitas</option><option value="Los Gatos">Los Gatos</option><option value="Masjid Mawaid">Masjid Mawaid</option><option value="Cupertino">Cupertino</option></select></td></tr><tr><td>12-21</td><td>Sun</td><td colspan="4"><div align="center">NO FMB for this day yet.</div></td></tr><tr><td colspan="6" bgcolor="#8f5902" height="1px"></td></tr><tr><td>12-22</td><td>Mon</td><td class="menu-width">TBD</td><td><select id="2014-12-22_small"><option selected="selected" value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></td><td><select id="2014-12-22_large"><option selected="selected" value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></td><td><select id="2014-12-22_pickup"><option selected="selected" value="Not-Selected">Not-Selected</option><option value="Sunnyvale">Sunnyvale</option><option value="Milpitas">Milpitas</option><option value="Los Gatos">Los Gatos</option><option value="Masjid Mawaid">Masjid Mawaid</option><option value="Cupertino">Cupertino</option></select></td></tr><tr><td>12-23</td><td>Tue</td><td class="menu-width">TBD</td><td><select id="2014-12-23_small"><option selected="selected" value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></td><td><select id="2014-12-23_large"><option selected="selected" value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></td><td><select id="2014-12-23_pickup"><option selected="selected" value="Not-Selected">Not-Selected</option><option value="Sunnyvale">Sunnyvale</option><option value="Milpitas">Milpitas</option><option value="Los Gatos">Los Gatos</option><option value="Masjid Mawaid">Masjid Mawaid</option><option value="Cupertino">Cupertino</option></select></td></tr><tr><td>12-24</td><td>Wed</td><td class="menu-width">TBD</td><td><select id="2014-12-24_small"><option selected="selected" value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></td><td><select id="2014-12-24_large"><option selected="selected" value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></td><td><select id="2014-12-24_pickup"><option selected="selected" value="Not-Selected">Not-Selected</option><option value="Sunnyvale">Sunnyvale</option><option value="Milpitas">Milpitas</option><option value="Los Gatos">Los Gatos</option><option value="Masjid Mawaid">Masjid Mawaid</option><option value="Cupertino">Cupertino</option></select></td></tr><tr><td>12-25</td><td>Thu</td><td class="menu-width">TBD</td><td><select id="2014-12-25_small"><option selected="selected" value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></td><td><select id="2014-12-25_large"><option selected="selected" value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></td><td><select id="2014-12-25_pickup"><option selected="selected" value="Not-Selected">Not-Selected</option><option value="Sunnyvale">Sunnyvale</option><option value="Milpitas">Milpitas</option><option value="Los Gatos">Los Gatos</option><option value="Masjid Mawaid">Masjid Mawaid</option><option value="Cupertino">Cupertino</option></select></td></tr><tr><td>12-26</td><td>Fri</td><td colspan="4"><div align="center">NO FMB for this day yet.</div></td></tr><tr><td>12-27</td><td>Sat</td><td class="menu-width">TBD</td><td><select id="2014-12-27_small"><option selected="selected" value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></td><td><select id="2014-12-27_large"><option selected="selected" value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></td><td><select id="2014-12-27_pickup"><option selected="selected" value="Not-Selected">Not-Selected</option><option value="Sunnyvale">Sunnyvale</option><option value="Milpitas">Milpitas</option><option value="Los Gatos">Los Gatos</option><option value="Masjid Mawaid">Masjid Mawaid</option><option value="Cupertino">Cupertino</option></select></td></tr><tr><td>12-28</td><td>Sun</td><td colspan="4"><div align="center">NO FMB for this day yet.</div></td></tr><tr><td colspan="6" bgcolor="#8f5902" height="1px"></td></tr><tr><td>12-29</td><td>Mon</td><td class="menu-width">TBD</td><td><select id="2014-12-29_small"><option selected="selected" value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></td><td><select id="2014-12-29_large"><option selected="selected" value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></td><td><select id="2014-12-29_pickup"><option selected="selected" value="Not-Selected">Not-Selected</option><option value="Sunnyvale">Sunnyvale</option><option value="Milpitas">Milpitas</option><option value="Los Gatos">Los Gatos</option><option value="Masjid Mawaid">Masjid Mawaid</option><option value="Cupertino">Cupertino</option></select></td></tr><tr><td>12-30</td><td>Tue</td><td colspan="4"><div align="center"><font color="red">Syedna Abdullah Badruddin A.Q. (Surat)</font></div></td></tr><tr><td>12-31</td><td>Wed</td><td class="menu-width">TBD</td><td><select id="2014-12-31_small"><option selected="selected" value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></td><td><select id="2014-12-31_large"><option selected="selected" value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></td><td><select id="2014-12-31_pickup"><option selected="selected" value="Not-Selected">Not-Selected</option><option value="Sunnyvale">Sunnyvale</option><option value="Milpitas">Milpitas</option><option value="Los Gatos">Los Gatos</option><option value="Masjid Mawaid">Masjid Mawaid</option><option value="Cupertino">Cupertino</option></select></td></tr></tbody>	
+</table>
+<div class="form_settings">	
+<p>
+	<input class="submit" type="button" value="Submit" id="save_rsvp">
+</p>
+</div>
+</div>
+</div>
+
+	</div>
+ </div>
+    </div>
+    <div id="content_footer"></div>
+    <div id="footer">
+      <p>Copyright © San Jose Jamaat </p>
+    </div>
+  
+
+</body></html>
